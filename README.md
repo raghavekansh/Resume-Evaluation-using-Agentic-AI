@@ -1,5 +1,4 @@
 # 🤖 Resume Evaluation System using Agentic AI 
-**Developer:** Ekansh Raghav  
 
 ### 🧩 Project Overview
 This project showcases an **Agentic AI-powered Resume Evaluation System** built on **n8n** and **Google Gemini models**.  
