@@ -31,8 +31,8 @@ It automates the **end-to-end HR screening workflow** — from form submission, 
 ### 📂 Folder Structure
 Resume-Evaluation-using-Agentic-AI/
 ├─ workflow/
-│  ├─ workflow.json # full n8n configuration
-│  └─ workflow_diagram.png # visual representation of the workflow
+│  ├─ workflow.json 
+│  └─ workflow_diagram.png 
 ├─ README.md
 
 
