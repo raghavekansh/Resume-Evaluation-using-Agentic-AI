@@ -1,0 +1,766 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=CV",
+        "options": {}
+      },
+      "id": "edc0fdf1-9595-43d1-a850-a976d42c7dc1",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        1728,
+        912
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Educational qualification",
+              "description": "Summary of your academic career. Focus on your high school and university studies. Summarize in 100 words maximum and also include your grade if applicable.",
+              "required": true
+            },
+            {
+              "name": "Job History",
+              "description": "Work history summary. Focus on your most recent work experiences. Summarize in 100 words maximum",
+              "required": true
+            },
+            {
+              "name": "Skills",
+              "description": "Extract the candidate’s technical skills. What software and frameworks they are proficient in. Make a bulleted list.",
+              "required": true
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value."
+        }
+      },
+      "id": "2c5c7f0b-d472-4748-9dbe-a0888e94e36c",
+      "name": "Qualifications",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "position": [
+        2064,
+        1088
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {
+          "summarizationMethodAndPrompts": {
+            "values": {
+              "combineMapPrompt": "=Write a concise summary of the following:\n\nCity: {{ $json.output.city }}\nBirthdate: {{ $json.output.birthdate }}\nEducational qualification: {{ $json.output[\"Educational qualification\"] }}\nJob History: {{ $json.output[\"Job History\"] }}\nSkills: {{ $json.output.Skills }}\n\nUse 100 words or less. Be concise and conversational.",
+              "prompt": "=Write a concise summary of the following:\n\nCity: {{ $json.output.city }}\nBirthdate: {{ $json.output.birthdate }}\nEducational qualification: {{ $json.output[\"Educational qualification\"] }}\nJob History: {{ $json.output[\"Job History\"] }}\nSkills: {{ $json.output.Skills }}\n\nUse 100 words or less. Be concise and conversational."
+            }
+          }
+        }
+      },
+      "id": "0644fc1c-afab-48f9-a148-cab763722adf",
+      "name": "Summarization Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainSummarization",
+      "position": [
+        2768,
+        960
+      ],
+      "typeVersion": 2,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "2a8b8d74-cdab-412b-9898-e8edf7d648fc",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        2512,
+        960
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1UJ4kpc6IbSvQC7VFl63CqJ3cSPxzWy46q16srwJYnt0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet2",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('On form submission1').item.json.Name }}",
+            "Rating": "={{ $json.output.vote }}",
+            "Consideration": "={{ $json.output.consideration }}",
+            "Strong Candidate": "={{ $json.output['Strong Candidate'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Strong Candidate",
+              "displayName": "Strong Candidate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Consideration",
+              "displayName": "Consideration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d6d971c1-214e-4884-a6a2-f05aa2a50b5d",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        4064,
+        976
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VuDOX1zR5vsW3Ymr",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"vote\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"consideration\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n        \"Strong Candidate\": {\n            \"type\": \"Boolean\"\n        }\n\t}\n}"
+      },
+      "id": "bbb1a5cf-dea8-4ede-a14a-12791b79e446",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        3712,
+        1200
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Profile Sought:\n{{ $node[\"Merge2\"].json[\"Profile Wanted\"] }}\n\nCandidate Summary:\n{{ $node[\"Summarization Chain\"].json[\"response\"][\"text\"] }}\n\n---\n\nYou are an HR evaluation expert.\n\nEvaluate how well the candidate aligns with the given profile. \nIf the “Profile Sought” section is missing or empty, simply evaluate the candidate based on their skills, education, and work experience without mentioning that the profile is unavailable.\n\nPlease return your output **only in English** and strictly in this JSON structure:\n\n{\n  \"vote\": \"Score from 1 to 10 based on how well the candidate fits the profile\",\n  \"consideration\": \"A short reasoning (in English) for the score, highlighting key strengths and weaknesses relevant to the position\",\n  \"Strong Candidate\": \"Yes or No (Yes if the score is 7 or above, otherwise No)\"\n}\n\nRules:\n- Output must be **valid JSON** only.\n- Keep the tone concise, formal, and professional.\n- Avoid repeating data or unnecessary explanation.\n- Do not mention missing or unavailable data.\n- Do not include any non-English text or emojis.\n",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an HR expert and need to assess if the candidate aligns with the profile the company is looking for. You must give a score from 1 to 10, where 1 means the candidate is not at all aligned with the requirements, while 10 means they are the ideal candidate because they perfectly match the desired profile. Additionally, in the \"consideration\" field, explain why you gave that score"
+            }
+          ]
+        }
+      },
+      "id": "b30b9cbd-bffd-4a5b-8185-3334b9b2b8ad",
+      "name": "HR Expert",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        3568,
+        976
+      ],
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"telephone\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n      \"city\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n      \"birthdate\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}",
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value."
+        }
+      },
+      "id": "371c75df-2b06-46d1-8eb9-f48f445c0309",
+      "name": "Personal Data",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "position": [
+        2064,
+        832
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-05-20",
+        "options": {}
+      },
+      "id": "9868642e-b8ee-4a7b-b6b8-55622159d8d8",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        2656,
+        1296
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5R6PEgPZ8QagAl8G",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1UJ4kpc6IbSvQC7VFl63CqJ3cSPxzWy46q16srwJYnt0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Full Name": "={{ $json.Name }}",
+            "Email": "={{ $json.Email }}",
+            "Role Applied For": "={{ $json['Job Role'] }}",
+            "Branch": "={{ $json.Branch }}",
+            "Timestamp": "={{ $json.submittedAt }}",
+            "Skills": "={{ $json.Skills }}",
+            "Education": "={{ $json.Education }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Education",
+              "displayName": "Education",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Branch",
+              "displayName": "Branch",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Role Applied For",
+              "displayName": "Role Applied For",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Skills",
+              "displayName": "Skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f27eb081-8fe1-4a8c-88ca-1747047bf3f2",
+      "name": "job roles",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2112,
+        1312
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VuDOX1zR5vsW3Ymr",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "42168ba0-8c2f-43d0-a92a-76defc2a0175",
+      "name": "Merge2",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        3280,
+        976
+      ],
+      "typeVersion": 3.1
+    },
+    {
+      "parameters": {
+        "sendTo": "ekanshraghav133@gmail.com",
+        "subject": "=New Applicant Summary –  {{ $('On form submission1').item.json.Name }}",
+        "message": "=<html>\n  <body style=\"font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 0;\">\n    <div style=\"max-width: 760px; margin: 40px auto; background: #ffffff; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); padding: 30px; color: #333;\">\n      \n      <div style=\"border-bottom: 3px solid #0057b7; padding-bottom: 10px; margin-bottom: 20px;\">\n        <h2 style=\"color: #0057b7; margin: 0;\">Applicant Details</h2>\n      </div>\n\n      <table style=\"width: 100%; font-size: 15px; border-collapse: collapse;\">\n        <tr>\n          <td style=\"padding: 6px 0;\"><strong>Applicant Name:</strong></td>\n          <td>{{ $json.Name }}</td>\n        </tr>\n\t <tr>\n          <td style=\"padding: 6px 0;\"><strong>Education:</strong></td>\n          <td>{{ $('On form submission1').item.json.Education }}, {{ $('On form submission1').item.json.Branch }}</td>\n        </tr>\n\t<tr>\n          <td style=\"padding: 6px 0;\"><strong>Role Applied For:</strong></td>\n          <td>{{ $('On form submission1').item.json['Job Role'] }}</td>\n        </tr>\n        <tr>\n          <td style=\"padding: 6px 0;\"><strong>Skills:</strong></td>\n          <td>{{ $('On form submission1').item.json.Skills }}</td>\n        </tr>\n\t<tr>\n          <td style=\"padding: 6px 0;\"><strong>Email:</strong></td>\n          <td>{{ $('On form submission1').item.json.Email }}</td>\n        </tr>\n      </table>\n\n      <hr style=\"border: none; border-top: 1px solid #dcdcdc; margin: 25px 0;\">\n\n      <h3 style=\"color: #0057b7;\">Summary</h3>\n      <div style=\"background-color: #f8faff; border-left: 4px solid #0057b7; padding: 14px 18px; border-radius: 6px; margin-bottom: 25px; line-height: 1.6;\">\n        <p style=\"margin: 0; color: #333;\">{{ $json['Summary'] || $node['Summarization Chain'].json['response']['text'] }}</p>\n      </div>\n\n      <h3 style=\"color: #0057b7;\">Evaluation Results</h3>\n      <table cellpadding=\"10\" cellspacing=\"0\" style=\"border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 10px; border: 1px solid #ccd4dd;\">\n        <thead>\n          <tr style=\"background-color: #e9f0fa; text-align: left; border-bottom: 2px solid #ccd4dd;\">\n            <th style=\"width: 18%;\">Name</th>\n            <th style=\"width: 10%;\">Rating</th>\n            <th style=\"width: 52%;\">Consideration</th>\n            <th style=\"width: 20%;\">Strong Candidate</th>\n          </tr>\n        </thead>\n        <tbody>\n          <tr style=\"border-top: 1px solid #e2e6ea;\">\n            <td>{{ $json.Name }}</td>\n            <td style=\"text-align: center;\">{{ $json.Rating }}</td>\n            <td style=\"line-height: 1.5;\">{{ $json.Consideration }}</td>\n            <td style=\"text-align: center;\">{{ $json['Strong Candidate'] }}</td>\n          </tr>\n        </tbody>\n      </table>\n\n      <p style=\"margin-top: 25px;\">\n  <strong>Submitted On:</strong>\n  {{ new Date($now).toLocaleString('en-GB', { \n      day: '2-digit', \n      month: '2-digit', \n      year: '2-digit', \n      hour: '2-digit', \n      minute: '2-digit', \n      hour12: true \n  }).replace(',', '') }}\n</p>\n      <div style=\"text-align: center; margin-top: 35px; font-size: 13px; color: #777;\">\n        <p>Generated by the <strong>HR Applicant Evaluation Workflow</strong></p>\n      </div>\n    </div>\n  </body>\n</html>\n",
+        "options": {}
+      },
+      "id": "98a40e34-caad-42ac-85d4-b18106b1efe5",
+      "name": "Send Summary to HR",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        4304,
+        976
+      ],
+      "webhookId": "d8f58f98-2199-416c-924f-9140b3be7837",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "15jQlvbVhcuzmkIZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Application Received Successfully",
+        "message": "=<html>\n  <body style=\"font-family: 'Segoe UI', Arial, sans-serif; background-color: #eef2f7; margin: 0; padding: 0;\">\n    <div style=\"max-width: 680px; margin: 40px auto; background: linear-gradient(135deg, #ffffff 0%, #f9fbfd 100%); border-radius: 12px; box-shadow: 0 6px 14px rgba(0,0,0,0.08); padding: 35px; color: #333;\">\n      \n      <!-- HEADER / LOGO SECTION -->\n      <div style=\"text-align: center; padding-bottom: 15px; border-bottom: 3px solid #0078D7;\">\n        <h2 style=\"color: #0078D7; margin: 0; font-size: 26px;\">Application Received Successfully</h2>\n        <p style=\"color: #555; margin-top: 6px; font-size: 15px;\">We’re excited to review your application!</p>\n      </div>\n\n      <!-- GREETING -->\n      <p style=\"margin-top: 25px; font-size: 16px;\">Dear <strong style=\"color: #0078D7;\">{{ $json.Name }}</strong>,</p>\n\n      <p style=\"font-size: 15px; line-height: 1.6;\">\n        Thank you for applying for the <strong>{{ $json['Job Role'] }}</strong> position in our company.\n      </p>\n\n      <!-- APPLICATION DETAILS -->\n      <div style=\"background-color: #ffffff; border: 1px solid #dce3eb; border-radius: 10px; padding: 18px 22px; margin: 30px 0; box-shadow: 0 3px 8px rgba(0,0,0,0.05);\">\n        <h3 style=\"margin-top: 0; color: #005fa3; border-left: 4px solid #0078D7; padding-left: 10px;\">Application Details</h3>\n        <table style=\"width: 100%; border-collapse: collapse; color: #333; font-size: 15px;\">\n          <tr>\n            <td style=\"padding: 8px 0; width: 40%;\"><strong>Role:</strong></td>\n            <td style=\"padding: 8px 0;\">{{ $json['Job Role'] }}</td>\n          </tr>\n          <tr>\n            <td style=\"padding: 8px 0;\"><strong>Education:</strong></td>\n            <td style=\"padding: 8px 0;\">{{ $json.Education }}, {{ $json.Branch }}</td>\n          </tr>\n          <tr>\n            <td style=\"padding: 8px 0;\"><strong>Submitted:</strong></td>\n            <td style=\"padding: 8px 0;\">\n            {{ new Date($now).toLocaleString('en-GB', { \n      day: '2-digit', \n      month: '2-digit', \n      year: '2-digit', \n      hour: '2-digit', \n      minute: '2-digit', \n      hour12: true \n  }).replace(',', '') }}\n            </td>\n          </tr>\n        </table>\n      </div>\n\n      <!-- BODY -->\n      <p style=\"font-size: 15px; line-height: 1.7;\">\n        We have successfully received your CV and application. Our recruitment team will carefully review your profile.\n        If your qualifications align with our requirements, we will contact you within\n        <strong>2–3 business days</strong> to discuss the next steps.\n      </p>\n\n      <!-- APPRECIATION BOX -->\n      <div style=\"margin-top: 25px; background: #0078D7; color: #fff; padding: 14px 20px; border-radius: 8px; text-align: center; font-size: 15px; font-weight: 500;\">\n        We truly appreciate your interest in joining our organization.\n      </div>\n\n      <!-- SIGNATURE -->\n      <p style=\"margin-top: 30px; font-size: 15px;\">Warm regards,<br>\n        <strong style=\"color: #0078D7;\">HR Team</strong><br>\n        <span style=\"font-size: 13px; color: #777;\">Recruitment Department</span>\n      </p>\n\n      <!-- FOOTER -->\n      <div style=\"text-align: center; margin-top: 25px; color: #888; font-size: 13px;\">\n        <em>Your future starts here — we wish you the best of luck!</em>\n      </div>\n\n    </div>\n  </body>\n</html>\n",
+        "options": {}
+      },
+      "id": "70611ef5-98e9-4f6f-a5b7-3d7523f3217e",
+      "name": "Send Confirmation to Applicant1",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        704
+      ],
+      "webhookId": "d245f6fc-71b5-478c-a91d-ef697dc5eab6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "15jQlvbVhcuzmkIZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Candidate Application Form",
+        "formDescription": "Please fill in all required fields carefully. We'll review your profile and get in touch soon.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "Enter your full name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Education",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "B.Tech"
+                  },
+                  {
+                    "option": "M.Tech"
+                  },
+                  {
+                    "option": "Dual Degree"
+                  },
+                  {
+                    "option": "Ph.D"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Branch",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Civil Engineering"
+                  },
+                  {
+                    "option": "Chemical Engineering"
+                  },
+                  {
+                    "option": "CSE"
+                  },
+                  {
+                    "option": "EE"
+                  },
+                  {
+                    "option": "AI"
+                  },
+                  {
+                    "option": "ME"
+                  },
+                  {
+                    "option": "MSE"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Skills",
+              "placeholder": "List your key skills (e.g., Python, AutoCAD, MATLAB)",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Job Role",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "SDE"
+                  },
+                  {
+                    "option": "Data Scientist"
+                  },
+                  {
+                    "option": "AI Engineer"
+                  },
+                  {
+                    "option": "VLSI"
+                  },
+                  {
+                    "option": "IOT"
+                  },
+                  {
+                    "option": "Geotech"
+                  },
+                  {
+                    "option": "Finance "
+                  },
+                  {
+                    "option": "Structural"
+                  },
+                  {
+                    "option": "Full Stack"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "example@email.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "CV",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "customCss": ":root {\n  --font-family: 'Poppins', 'Segoe UI', sans-serif;\n  --font-size-body: 14px;\n  --font-size-label: 15px;\n  --font-size-header: 24px;\n  --font-size-subheader: 14px;\n\n  --color-background: #f5f8fb;\n  --color-card-bg: #ffffff;\n  --color-header: #1a73e8;\n  --color-label: #2c3e50;\n  --color-input-border: #d0d7de;\n  --color-input-text: #333;\n  --color-focus-border: #1a73e8;\n  --color-submit-btn-bg: linear-gradient(90deg, #1a73e8, #4285f4);\n  --color-submit-btn-text: #ffffff;\n  --color-error: #e63946;\n  --color-required: #e63946;\n\n  --border-radius-card: 12px;\n  --border-radius-input: 8px;\n  --padding-card: 28px;\n  --box-shadow-card: 0 6px 18px rgba(0, 0, 0, 0.08);\n}\n\nbody {\n  background: var(--color-background);\n  font-family: var(--font-family);\n}\n\nform {\n  background: var(--color-card-bg);\n  border-radius: var(--border-radius-card);\n  box-shadow: var(--box-shadow-card);\n  padding: var(--padding-card);\n  border: 1px solid #e3e8ef;\n}\n\nlabel {\n  font-weight: 600;\n  color: var(--color-label);\n}\n\ninput, select, textarea {\n  border-radius: var(--border-radius-input);\n  border: 1px solid var(--color-input-border);\n  font-size: var(--font-size-body);\n  padding: 10px 12px;\n  transition: border 0.2s ease-in-out;\n}\n\ninput:focus, select:focus, textarea:focus {\n  border-color: var(--color-focus-border);\n  box-shadow: 0 0 4px rgba(26, 115, 232, 0.4);\n}\n\nbutton[type='submit'] {\n  background: var(--color-submit-btn-bg);\n  color: var(--color-submit-btn-text);\n  border: none;\n  border-radius: 8px;\n  padding: 12px 20px;\n  font-weight: 600;\n  font-size: 15px;\n  letter-spacing: 0.3px;\n  cursor: pointer;\n  box-shadow: 0 3px 8px rgba(66, 133, 244, 0.4);\n  transition: all 0.3s ease;\n}\n\nbutton[type='submit']:hover {\n  background: #155fc0;\n  transform: translateY(-2px);\n  box-shadow: 0 6px 14px rgba(26, 115, 232, 0.3);\n}\n\ninput[type='file']::-webkit-file-upload-button {\n  background: #1a73e8;\n  color: white;\n  border: none;\n  padding: 8px 14px;\n  border-radius: 6px;\n  font-size: 13px;\n  cursor: pointer;\n}\n\nh1, h2, h3 {\n  color: var(--color-header);\n  text-align: center;\n}\n\n.required::after {\n  content: '*';\n  color: var(--color-required);\n  margin-left: 3px;\n}\n"
+        }
+      },
+      "id": "a5d86f6d-4303-417c-a623-5a954676d704",
+      "name": "On form submission1",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        1248,
+        880
+      ],
+      "webhookId": "1141a321-75af-4f17-9f6e-35b5c5854d2a",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {},
+      "id": "cb143de3-0912-470e-9fd7-ef5472758bc3",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        4064,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "ekanshraghav133@gmail.com",
+        "subject": "=⚠️ Workflow Error Alert – {{$json.workflow.name}}",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <h2 style=\"color: #d93025;\">⚠️ Workflow Execution Failed</h2>\n    <p><strong>Workflow Name:</strong> {{$json.workflow.name}}</p>\n    <p><strong>Execution ID:</strong> {{$json.execution.id}}</p>\n    <p><strong>Node Causing Error:</strong> {{$json.execution.lastNodeExecuted}}</p>\n    <p><strong>Error Message:</strong> {{$json.execution.error.message}}</p>\n    <hr>\n    <p style=\"font-size: 13px; color: #666;\">This alert was automatically generated by your n8n error monitoring workflow.</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "id": "c2b5571d-33c0-4f8e-94f5-2d7aaaaf4c94",
+      "name": "Send Error Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        4320,
+        1280
+      ],
+      "webhookId": "8824d789-9b57-4df2-80dc-109fd9214645",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "15jQlvbVhcuzmkIZ",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Qualifications",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Personal Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qualifications": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Summarization Chain": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Summarization Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Send Summary to HR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "HR Expert",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HR Expert": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personal Data": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarization Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Qualifications",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Personal Data",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "HR Expert",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "job roles": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "HR Expert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission1": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation to Applicant1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "job roles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send Error Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateId": "5453",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "02ace7fe67b20fc05932cb2a472263b02f5550c94da8985bfa5eb8e61d0c870f"
+  }
+}
