@@ -28,13 +28,6 @@ It automates the **end-to-end HR screening workflow** — from form submission, 
 - Demonstrates an **AI-first, modular, and reusable workflow** — a real-world example of enterprise automation.
 
 ---
-### 📂 Folder Structure
-Resume-Evaluation-using-Agentic-AI/
-├─ workflow/
-│  ├─ workflow.json 
-│  └─ workflow_diagram.png 
-├─ README.md
-
 
 ### 🧱 Technologies and Frameworks
 - **n8n** (Agentic Workflow Automation)
